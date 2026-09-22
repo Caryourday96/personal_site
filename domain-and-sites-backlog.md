@@ -3,7 +3,7 @@
 ## Approved current work
 
 - [ ] Publish a game catalogue at https://play.adeticket.com using Azure DNS and HTTPS.
-- [ ] Initially list Family Showdown and link to https://ff.kayodeadetunji.com. Do not link to the unconfigured ff.adeticket.com.
+- [x] List Family Showdown at https://play.adeticket.com and link to https://ff.adeticket.com.
 - [ ] Create a static portfolio at kayodeadetunji.com from the owner's résumé, excluding all work history. Résumé requested; not yet available. Do not invent skills, credentials or projects.
 - [ ] Create an Adeticket Inc. static landing site at adeticket.com linking to the catalogue. Public contact: adeticket@gmail.com. Do not imply ticketing or payment services are available.
 - [ ] Inspect existing Azure DNS records and hosting before choosing deployment resources. Preserve email records and unrelated subdomains.
