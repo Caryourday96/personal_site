@@ -1,3 +1,8 @@
+## Broader Adeticket positioning — 2 October
+
+- [x] Broaden hero, metadata and navigation to apps/tools/games; showcase four actual projects with access requirements. Mobile320/390 browser regression passed.
+- [ ] Verify the broader positioning after publication.
+
 ## 2 October portfolio update
 
 - [x] Add fitness and budget projects locally, preserve Friends Showdown; verify canonical links and phone widths320/390 without overflow.

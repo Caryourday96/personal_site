@@ -26,7 +26,9 @@ test("Adeticket project cards fit mobile widths and use canonical links", async 
     "href",
     "https://budget.adeticket.com/",
   );
-  await expect(page.getByRole("heading", { name: "Play together" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Friends Showdown" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Browse the projects" })).toHaveAttribute("href", "#projects");
+  await expect(page.getByRole("link", { name: "See workout days" })).toHaveAttribute("href", "https://fitdays.adeticket.com/");
   for (const width of [390, 320]) {
     await page.setViewportSize({ width, height: 844 });
     expect(

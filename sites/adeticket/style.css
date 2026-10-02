@@ -139,3 +139,11 @@ footer span {
     grid-template-columns: 1fr;
   }
 }
+
+header { gap: 20px; flex-wrap: wrap; align-items: center; }
+header nav { display: flex; gap: 24px; flex-wrap: wrap; }
+a:focus-visible { outline: 3px solid #214b37; outline-offset: 5px; }
+#projects { scroll-margin-top: 24px; }
+#projects-heading { font-size: clamp(28px, 4vw, 40px); margin: 0 0 16px; }
+.project-intro { max-width: 720px; line-height: 1.7; color: #526257; margin-bottom: 32px; }
+footer { flex-wrap: wrap; }
