@@ -1,7 +1,7 @@
 ## 2 October portfolio update
 
 - [x] Add fitness and budget projects locally, preserve Friends Showdown; verify canonical links and phone widths320/390 without overflow.
-- [ ] Publish project-card additions after authorization and verify live root.
+- [x] Publish project-card additions:35280ee, both workflows37058714088/37058714159 success; live rootHTTP200 with fitness/budget links.
 - Standing rule: add every future website to this portfolio; global Codex AGENTS.md now records it.
 
 # Domains, catalogue and advertising
