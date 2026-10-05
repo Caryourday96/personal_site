@@ -56,4 +56,4 @@ Remaining, ranked by impact:
 
 ## 4 October — keyboard navigation
 
-Implemented skip-to-main link and visible keyboard focus on both roots and the catalogue, preserving all portfolio entries. Three synthetic phone-width/browser checks pass at320/390px, including focus transfer to main. Publication pending; catalogue source mirrored into the game deployment. No ads/CMP setting changes. Next: owner credential wording and consent checks before enabling ads.
+Implemented skip-to-main link and visible keyboard focus on both roots and the catalogue, preserving all portfolio entries. Three synthetic phone-width/browser checks pass at320/390px, including focus transfer to main. Published roots5ba98fd; workflows37246214661/37246214750 succeeded; both roots200 with skip link. Catalogue source deployed with gameed4abfa; live catalogue200 with skip link. No ads/CMP setting changes. Next: owner credential wording and consent checks before enabling ads.
