@@ -1,7 +1,7 @@
 ## Broader Adeticket positioning — 2 October
 
 - [x] Broaden hero, metadata and navigation to apps/tools/games; showcase four actual projects with access requirements. Mobile320/390 browser regression passed.
-- [ ] Verify the broader positioning after publication.
+- [x] Broader positioning deployed1d62acf; both workflows37059536423/37059535508 succeeded. Live rootHTTP200 with new hero, projects CTA and workout-days link.
 
 ## 2 October portfolio update
 
@@ -52,3 +52,8 @@ Remaining, ranked by impact:
 1. Confirm the exact wording and status of the Oracle certification and Algonquin diploma before publishing.
 2. Add verified project links or screenshots only when source URLs or assets are supplied.
 3. Recheck contrast and keyboard flow after future content additions.
+
+
+## 4 October — keyboard navigation
+
+Implemented skip-to-main link and visible keyboard focus on both roots and the catalogue, preserving all portfolio entries. Three synthetic phone-width/browser checks pass at320/390px, including focus transfer to main. Publication pending; catalogue source mirrored into the game deployment. No ads/CMP setting changes. Next: owner credential wording and consent checks before enabling ads.
