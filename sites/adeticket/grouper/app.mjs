@@ -48,7 +48,7 @@ function updateAnimationHelp() {
     : animationStyle.value === 'off'
       ? drawMode.value === 'step' ? 'Tap Draw next to reveal one name without motion or sound.' : 'Names appear in groups immediately. Shuffle sounds are paused.'
       : drawMode.value === 'step'
-        ? 'Tap Draw next for each slow reveal (about 4 seconds). Reveal remaining finishes the draw immediately.'
+        ? 'Tap Draw next for each reveal (1.5 seconds). Reveal remaining finishes the draw immediately.'
         : 'Names move slowly into their groups automatically. Sound is optional and starts off.';
 }
 animationStyle.addEventListener('change', updateAnimationHelp);
@@ -288,7 +288,7 @@ function drawNext() {
     { transform: 'translate(0, 0) scale(1) rotate(0deg)', opacity: 1, offset: .9 },
     { transform: 'translate(0, 0) scale(1) rotate(0deg)', opacity: 0 }
   ];
-  const animation = pill.animate(frames, { duration: 3600, easing: 'cubic-bezier(.18,.7,.25,1)', fill: 'both' });
+  const animation = pill.animate(frames, { duration: 1500, easing: 'cubic-bezier(.18,.7,.25,1)', fill: 'both' });
   motionCleanup = () => { animation.cancel(); stage.remove(); };
   animation.finished.then(() => { motionCleanup(); reveal(); }, () => {});
 }
