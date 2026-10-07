@@ -153,3 +153,12 @@ footer { flex-wrap: wrap; }
 .skip-link:focus{transform:none}
 a:focus-visible,button:focus-visible{outline:3px solid #a45209;outline-offset:4px}
 #main-content:focus{outline:none}
+.editorial{max-width:850px;border-top:1px solid #d1d6ca;padding:50px 0 75px}
+.editorial h2{font-size:clamp(30px,4vw,48px);line-height:1.15;letter-spacing:-.035em;margin:15px 0}
+.editorial p:not(.eyebrow),.article-page section p{font-size:18px;line-height:1.75;color:#526257}
+.article-page{max-width:850px;padding-top:70px;padding-bottom:90px}
+.article-page h1{font-size:clamp(42px,6vw,70px);line-height:1.08;letter-spacing:-.04em;margin:18px 0}
+.article-page .lead{font-size:21px;line-height:1.6;color:#526257}
+.article-page section{border-top:1px solid #d1d6ca;padding:30px 0}
+.article-page section h2{font-size:clamp(24px,3vw,31px);margin:0 0 12px}
+@media(max-width:720px){.article-page{padding-top:45px}.editorial{padding:35px 0 55px}}
