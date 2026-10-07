@@ -17,6 +17,9 @@ const summary = document.querySelector('#result-summary');
 const omittedSummary = document.querySelector('#omitted-summary');
 const shuffleButton = document.querySelector('#shuffle-again');
 const copyButton = document.querySelector('#copy-results');
+const printButton = document.querySelector('#print-results');
+const drawNextButton = document.querySelector('#draw-next');
+const hatStand = document.querySelector('#draw-hat-stand');
 const animationStyle = document.querySelector('#animation-style');
 const shuffleSound = document.querySelector('#shuffle-sound');
 const animationHelp = document.querySelector('#animation-help');
@@ -26,18 +29,27 @@ let currentOmitted = [];
 let lastInput = '';
 let motionCleanup = () => {};
 let motionFrame = 0;
+let drawQueue = [];
+let drawIndex = 0;
+let drawGeneration = 0;
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 function updateAnimationHelp() {
   const disabled = animationStyle.value === 'off' || reducedMotion.matches;
   shuffleSound.disabled = disabled;
   animationHelp.textContent = reducedMotion.matches
-    ? 'Your device requests reduced motion, so names appear in groups immediately and shuffle sounds are paused.'
+    ? animationStyle.value === 'hat-step'
+      ? 'Draw next still reveals one name per tap. Your device skips motion and sound.'
+      : 'Your device requests reduced motion, so names appear in groups immediately and shuffle sounds are paused.'
     : animationStyle.value === 'off'
       ? 'Names appear in groups immediately. Shuffle sounds are paused.'
+      : animationStyle.value === 'hat-step'
+        ? 'Names gather into a hat. Tap Draw next to reveal each name at your own pace.'
       : animationStyle.value === 'hat'
         ? 'Names gather into a hat before moving into groups. Sound is optional and starts off.'
-        : 'Names fly directly into their groups. Sound is optional and starts off.';
+        : animationStyle.value === 'spin'
+          ? 'Names spin across the screen before landing in their groups.'
+          : 'Names fly directly into their groups. Sound is optional and starts off.';
 }
 animationStyle.addEventListener('change', updateAnimationHelp);
 reducedMotion.addEventListener('change', updateAnimationHelp);
@@ -51,7 +63,7 @@ function playDrawSound(style) {
     const context = new AudioContextClass();
     void context.resume();
     const start = context.currentTime + .03;
-    const bursts = style === 'hat' ? 7 : 4;
+    const bursts = style === 'single' ? 1 : style.startsWith('hat') ? 7 : 4;
     const samples = Math.floor(context.sampleRate * .11);
     const buffer = context.createBuffer(1, samples, context.sampleRate);
     const channel = buffer.getChannelData(0);
@@ -63,7 +75,7 @@ function playDrawSound(style) {
       const source = context.createBufferSource();
       const filter = context.createBiquadFilter();
       const gain = context.createGain();
-      const time = start + index * (style === 'hat' ? .14 : .12);
+      const time = start + index * (style.startsWith('hat') ? .22 : .18);
       source.buffer = buffer;
       filter.type = 'bandpass';
       filter.frequency.value = 760 + index * 85;
@@ -72,7 +84,7 @@ function playDrawSound(style) {
       source.connect(filter).connect(gain).connect(context.destination);
       source.start(time);
     }
-    window.setTimeout(() => { void context.close(); }, 2200);
+    window.setTimeout(() => { void context.close(); }, 3200);
   } catch { /* Audio is optional; grouping must still work. */ }
 }
 
@@ -103,7 +115,8 @@ function animateDraw(style) {
   const centerX = window.innerWidth / 2;
   const centerY = Math.min(window.innerHeight * .42, 330);
   const startY = Math.max(24, Math.min(window.innerHeight - 70, namesField.getBoundingClientRect().top + 35));
-  const duration = style === 'hat' ? 780 : 650;
+  const duration = style === 'hat' ? 2200 : style === 'spin' ? 1700 : 1200;
+  const stagger = style === 'hat' ? 65 : style === 'spin' ? 70 : 75;
   items.forEach((item, index) => {
     const box = item.getBoundingClientRect();
     const x = Math.max(8, Math.min(window.innerWidth - 150, box.left));
@@ -128,12 +141,17 @@ function animateDraw(style) {
           { transform: `translate(${hatX}px, ${hatY}px) scale(.75) rotate(${(index % 2 ? 1 : -1) * 14}deg)`, opacity: 1, offset: .68 },
           { transform: 'translate(0, 0) scale(1) rotate(0deg)', opacity: 0, offset: 1 }
         ]
-      : [
+      : style === 'spin' ? [
+          { transform: `translate(${startX}px, ${sourceY}px) scale(.6) rotate(-110deg)`, opacity: 0 },
+          { transform: `translate(${hatX - 90}px, ${hatY - 45}px) scale(1.12) rotate(90deg)`, opacity: 1, offset: .38 },
+          { transform: `translate(${hatX + 80}px, ${hatY + 35}px) scale(1) rotate(270deg)`, opacity: 1, offset: .7 },
+          { transform: 'translate(0, 0) scale(1) rotate(360deg)', opacity: 0 }
+        ] : [
           { transform: `translate(${startX}px, ${sourceY}px) scale(.8)`, opacity: 0 },
           { transform: `translate(${startX}px, ${sourceY}px) scale(1)`, opacity: 1, offset: .15 },
           { transform: 'translate(0, 0) scale(1)', opacity: 0 }
         ];
-    animations.push(pill.animate(frames, { duration, delay: index * (style === 'hat' ? 38 : 42), easing: 'cubic-bezier(.25,.75,.2,1)', fill: 'both' }));
+    animations.push(pill.animate(frames, { duration, delay: index * stagger, easing: 'cubic-bezier(.25,.75,.2,1)', fill: 'both' }));
   });
   if (style === 'hat') animations.push(hat.animate([
     { transform: 'translateX(-50%) rotate(0deg)' },
@@ -141,8 +159,114 @@ function animateDraw(style) {
     { transform: 'translateX(-50%) rotate(11deg)', offset: .52 },
     { transform: 'translateX(-50%) rotate(-6deg)', offset: .72 },
     { transform: 'translateX(-50%) rotate(0deg)' }
-  ], { duration: 1150, fill: 'both' }));
-  timer = window.setTimeout(() => { if (!cancelled) motionCleanup(); }, duration + items.length * 42 + 100);
+  ], { duration: 1800, fill: 'both' }));
+  timer = window.setTimeout(() => { if (!cancelled) motionCleanup(); }, duration + items.length * stagger + 100);
+}
+
+function resetStepDraw() {
+  drawGeneration += 1;
+  drawQueue = [];
+  drawIndex = 0;
+  drawNextButton.hidden = true;
+  hatStand.hidden = true;
+  copyButton.disabled = false;
+  printButton.disabled = false;
+}
+
+function gatherIntoHat(names) {
+  drawNextButton.disabled = true;
+  if (reducedMotion.matches || !Element.prototype.animate) {
+    drawNextButton.disabled = false;
+    return;
+  }
+  const stage = document.createElement('div');
+  stage.className = 'draw-stage';
+  stage.setAttribute('aria-hidden', 'true');
+  document.body.append(stage);
+  const animations = [];
+  const generation = drawGeneration;
+  const hat = hatStand.getBoundingClientRect();
+  const hatX = hat.left + hat.width / 2;
+  const hatY = hat.top + hat.height / 2;
+  const startY = Math.max(25, Math.min(window.innerHeight - 45, namesField.getBoundingClientRect().top + 35));
+  let timer;
+  motionCleanup = () => {
+    window.clearTimeout(timer);
+    animations.forEach((animation) => animation.cancel());
+    stage.remove();
+  };
+  names.slice(0, 36).forEach((name, index) => {
+    const pill = document.createElement('span');
+    pill.className = 'draw-name';
+    pill.textContent = name;
+    pill.style.left = `${hatX}px`;
+    pill.style.top = `${hatY}px`;
+    stage.append(pill);
+    const offsetX = ((index % 7) - 3) * 42;
+    animations.push(pill.animate([
+      { transform: `translate(${offsetX}px, ${startY - hatY}px) scale(1)`, opacity: 0 },
+      { transform: `translate(${offsetX}px, ${startY - hatY}px) scale(1)`, opacity: 1, offset: .15 },
+      { transform: 'translate(0, 0) scale(.45)', opacity: 0 }
+    ], { duration: 950, delay: index * 45, easing: 'ease-in', fill: 'both' }));
+  });
+  timer = window.setTimeout(() => {
+    if (generation !== drawGeneration) return;
+    motionCleanup();
+    drawNextButton.disabled = false;
+  }, 1050 + Math.min(names.length, 36) * 45);
+}
+
+function drawNext() {
+  const next = drawQueue[drawIndex];
+  if (!next || drawNextButton.disabled) return;
+  drawNextButton.disabled = true;
+  const generation = drawGeneration;
+  const reveal = () => {
+    if (generation !== drawGeneration) return;
+    next.item.textContent = next.name;
+    next.item.classList.remove('pending-name');
+    drawIndex += 1;
+    if (drawIndex === drawQueue.length) {
+      drawNextButton.hidden = true;
+      hatStand.hidden = true;
+      copyButton.disabled = false;
+      printButton.disabled = false;
+      summary.textContent = `${drawQueue.length} people in ${currentGroups.length} group${currentGroups.length === 1 ? '' : 's'}. Every included name appears once.`;
+    } else {
+      drawNextButton.disabled = false;
+      summary.textContent = `${drawIndex} of ${drawQueue.length} names drawn. Tap Draw next to continue.`;
+    }
+  };
+  if (reducedMotion.matches || !Element.prototype.animate) {
+    reveal();
+    return;
+  }
+  next.item.scrollIntoView({ block: 'nearest', behavior: 'instant' });
+  playDrawSound('single');
+  const stage = document.createElement('div');
+  stage.className = 'draw-stage';
+  stage.setAttribute('aria-hidden', 'true');
+  const pill = document.createElement('span');
+  pill.className = 'draw-name';
+  pill.textContent = next.name;
+  const target = next.item.getBoundingClientRect();
+  const hat = hatStand.getBoundingClientRect();
+  const x = Math.max(8, Math.min(window.innerWidth - 150, target.left));
+  const y = Math.max(8, Math.min(window.innerHeight - 42, target.top));
+  pill.style.left = `${x}px`;
+  pill.style.top = `${y}px`;
+  stage.append(pill);
+  document.body.append(stage);
+  const startX = hat.left + hat.width / 2 - x;
+  const startY = Math.max(50, Math.min(window.innerHeight - 80, hat.top + hat.height / 2)) - y;
+  const animation = pill.animate([
+    { transform: `translate(${startX}px, ${startY}px) scale(.45) rotate(-18deg)`, opacity: 0 },
+    { transform: `translate(${startX}px, ${startY}px) scale(.8) rotate(12deg)`, opacity: 1, offset: .2 },
+    { transform: 'translate(0, 0) scale(1) rotate(0deg)', opacity: 1, offset: .9 },
+    { transform: 'translate(0, 0) scale(1) rotate(0deg)', opacity: 0 }
+  ], { duration: 1150, easing: 'cubic-bezier(.18,.7,.25,1)', fill: 'both' });
+  motionCleanup = () => { animation.cancel(); stage.remove(); };
+  animation.finished.then(() => { motionCleanup(); reveal(); }, () => {});
 }
 
 function mode() { return form.elements.method.value; }
@@ -155,6 +279,7 @@ function updateMode() {
 function clearResults() {
   window.cancelAnimationFrame(motionFrame);
   motionCleanup();
+  resetStepDraw();
   currentGroups = null;
   results.hidden = true;
   message.textContent = '';
@@ -202,7 +327,10 @@ function reviewDuplicates(duplicates) {
 function render(groups, labels, omitted) {
   window.cancelAnimationFrame(motionFrame);
   motionCleanup();
+  resetStepDraw();
   const firstDraw = results.hidden;
+  const style = animationStyle.value;
+  const stepDraw = style === 'hat-step';
   cards.replaceChildren();
   groups.forEach((members, index) => {
     const card = document.createElement('section');
@@ -215,7 +343,8 @@ function render(groups, labels, omitted) {
     const list = document.createElement('ol');
     members.forEach((name) => {
       const li = document.createElement('li');
-      li.textContent = name;
+      li.textContent = stepDraw ? 'Waiting to be drawn' : name;
+      if (stepDraw) li.className = 'pending-name';
       list.append(li);
     });
     card.append(heading, count, list);
@@ -224,14 +353,30 @@ function render(groups, labels, omitted) {
   currentGroups = groups;
   currentLabels = labels;
   currentOmitted = omitted;
-  summary.textContent = `${groups.reduce((n, group) => n + group.length, 0)} people in ${groups.length} group${groups.length === 1 ? '' : 's'}. Every included name appears once.`;
+  const total = groups.reduce((n, group) => n + group.length, 0);
+  summary.textContent = stepDraw
+    ? `0 of ${total} names drawn. Tap Draw next to reveal each assignment.`
+    : `${total} people in ${groups.length} group${groups.length === 1 ? '' : 's'}. Every included name appears once.`;
   omittedSummary.hidden = omitted.length === 0;
   omittedSummary.textContent = omitted.length ? `Omitted from this draw (${omitted.length}): ${omitted.join(', ')}` : '';
   results.hidden = false;
   message.textContent = '';
   if (firstDraw) document.querySelector('#results-heading').focus();
-  const style = animationStyle.value;
-  if (style !== 'off' && !reducedMotion.matches) {
+  if (stepDraw) {
+    const lists = [...cards.querySelectorAll('.group-card ol')];
+    for (let row = 0; row < Math.max(...groups.map((group) => group.length)); row += 1) {
+      groups.forEach((group, index) => {
+        if (group[row] !== undefined) drawQueue.push({ name: group[row], item: lists[index].children[row] });
+      });
+    }
+    drawNextButton.hidden = false;
+    hatStand.hidden = false;
+    copyButton.disabled = true;
+    printButton.disabled = true;
+    results.scrollIntoView({ block: 'start', behavior: 'instant' });
+    playDrawSound(style);
+    motionFrame = window.requestAnimationFrame(() => { motionFrame = 0; gatherIntoHat(groups.flat()); });
+  } else if (style !== 'off' && !reducedMotion.matches) {
     results.scrollIntoView({ block: 'start', behavior: 'instant' });
     playDrawSound(style);
     motionFrame = window.requestAnimationFrame(() => { motionFrame = 0; animateDraw(style); });
@@ -268,6 +413,7 @@ shuffleButton.addEventListener('click', () => {
   if (!currentGroups || namesField.value !== lastInput) return;
   randomize();
 });
+drawNextButton.addEventListener('click', drawNext);
 copyButton.addEventListener('click', async () => {
   if (!currentGroups) return;
   try {
