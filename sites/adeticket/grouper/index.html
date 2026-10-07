@@ -11,16 +11,18 @@
   <link rel="stylesheet" href="/grouper/grouper.css">
   <script type="module" src="/grouper/app.mjs"></script>
 </head>
-<body>
+<body class="grouper-body">
   <a class="skip-link" href="#main-content">Skip to main content</a>
   <header><a class="brand grouper-brand" href="/"><img src="/favicon.png" alt="" width="44" height="44">adeticket<span>inc.</span></a><nav aria-label="Main navigation"><a href="/">Projects</a><a href="/guide.html">App guide</a><a href="/privacy.html">Privacy</a></nav></header>
   <main id="main-content" class="grouper-page" tabindex="-1">
     <p class="eyebrow">A SIMPLE GROUP MAKER</p>
     <h1>Everyone gets a group.</h1>
     <p class="intro">Paste names, choose how to split them, and make balanced random groups in one tap. Grouper does not upload or save your names.</p>
+    <div class="flow-steps" aria-label="How it works"><span>01 · Add people</span><span>02 · Choose a split</span><span>03 · Share the groups</span></div>
     <form id="grouper-form" novalidate>
       <label for="names" class="field-title">Participants <span>one name per line</span></label>
-      <textarea id="names" rows="10" placeholder="Amina&#10;David&#10;Ihechi&#10;Sam" spellcheck="false" autocomplete="off"></textarea>
+      <textarea id="names" rows="10" spellcheck="false" autocomplete="off" aria-describedby="names-help"></textarea>
+      <p id="names-help" class="field-help">Paste or type your list. Blank lines are ignored.</p>
       <div id="participant-picker" class="participant-picker" hidden><p class="field-title">Include in this draw</p><p>Uncheck anyone sitting out. Their name stays in your list.</p><p id="participant-summary" role="status" aria-live="polite"></p><div id="participant-options" class="participant-options"></div></div>
       <fieldset>
         <legend class="field-title">Group by</legend>
@@ -29,10 +31,10 @@
       <label id="number-label" class="field-title" for="group-number">Number of groups</label>
       <input id="group-number" type="number" inputmode="numeric" min="1" step="1" value="2">
       <label class="field-title group-names-label" for="group-names">Group names <span>optional, one per line</span></label>
-      <textarea id="group-names" rows="3" placeholder="Team Sunshine&#10;Team Moonlight" autocomplete="off"></textarea>
+      <textarea id="group-names" rows="3" autocomplete="off"></textarea>
       <div id="duplicate-review" class="review" hidden><strong>Repeated names need a check</strong><ul id="duplicate-list"></ul><label><input type="checkbox" id="confirm-duplicates"> These are separate participants; include every line.</label></div>
       <p id="message" class="form-message" role="status" aria-live="polite"></p>
-      <button class="button primary-action" type="submit">Randomize groups</button>
+      <div class="form-actions"><button class="button primary-action" type="submit">Randomize groups</button><button id="clear-form" class="clear-action" type="button">Clear form</button></div>
     </form>
     <section id="results" class="results" aria-labelledby="results-heading" hidden>
       <div class="results-head"><div><p class="eyebrow">YOUR GROUPS</p><h2 id="results-heading" tabindex="-1">Ready to go.</h2><p id="result-summary" role="status"></p></div><div class="result-actions"><button id="shuffle-again" type="button">Shuffle again</button><button id="copy-results" type="button">Copy results</button><button id="print-results" type="button">Print</button></div></div>

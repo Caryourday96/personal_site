@@ -145,3 +145,15 @@ copyButton.addEventListener('click', async () => {
   }
 });
 document.querySelector('#print-results').addEventListener('click', () => window.print());
+document.querySelector('#clear-form').addEventListener('click', () => {
+  if ((namesField.value.trim() || groupNamesField.value.trim()) && !window.confirm('Clear this list and start over?')) return;
+  namesField.value = '';
+  groupNamesField.value = '';
+  form.elements.method.value = 'groups';
+  numberField.value = '2';
+  document.querySelector('#number-label').textContent = 'Number of groups';
+  confirmDuplicates.checked = false;
+  populateParticipants();
+  clearResults();
+  namesField.focus();
+});
