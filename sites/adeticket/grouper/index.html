@@ -8,8 +8,8 @@
   <link rel="canonical" href="https://adeticket.com/grouper">
   <link rel="icon" href="/favicon.png" type="image/png" sizes="64x64">
   <link rel="stylesheet" href="/style.css">
-  <link rel="stylesheet" href="/grouper/grouper.css?v=3">
-  <script type="module" src="/grouper/app.mjs"></script>
+  <link rel="stylesheet" href="/grouper/grouper.css?v=4">
+  <script type="module" src="/grouper/app.mjs?v=4"></script>
 </head>
 <body class="grouper-body">
   <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -32,6 +32,12 @@
       <input id="group-number" type="number" inputmode="numeric" min="1" step="1" value="2">
       <label class="field-title group-names-label" for="group-names">Group names <span>optional, one per line</span></label>
       <textarea id="group-names" rows="3" autocomplete="off"></textarea>
+      <div class="shuffle-settings">
+        <label for="animation-style" class="field-title">Shuffle animation</label>
+        <select id="animation-style" aria-describedby="animation-help"><option value="hat">Hat draw</option><option value="cascade">Cascade</option><option value="off">Off</option></select>
+        <label class="sound-option"><input id="shuffle-sound" type="checkbox"> Play shuffle sounds</label>
+        <p id="animation-help" class="field-help">Hat draw gathers names into a hat before dealing them into groups. Reduced-motion settings turn animation off automatically. Sound starts off.</p>
+      </div>
       <div id="duplicate-review" class="review" hidden><strong>Repeated names need a check</strong><ul id="duplicate-list"></ul><label><input type="checkbox" id="confirm-duplicates"> These are separate participants; include every line.</label></div>
       <p id="message" class="form-message" role="status" aria-live="polite"></p>
       <div class="form-actions"><button class="button primary-action" type="submit">Randomize groups</button><button id="clear-form" class="clear-action" type="button">Clear form</button></div>

@@ -17,10 +17,126 @@ const summary = document.querySelector('#result-summary');
 const omittedSummary = document.querySelector('#omitted-summary');
 const shuffleButton = document.querySelector('#shuffle-again');
 const copyButton = document.querySelector('#copy-results');
+const animationStyle = document.querySelector('#animation-style');
+const shuffleSound = document.querySelector('#shuffle-sound');
+const animationHelp = document.querySelector('#animation-help');
 let currentGroups = null;
 let currentLabels = [];
 let currentOmitted = [];
 let lastInput = '';
+let motionCleanup = () => {};
+let motionFrame = 0;
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+function updateAnimationHelp() {
+  const disabled = animationStyle.value === 'off' || reducedMotion.matches;
+  shuffleSound.disabled = disabled;
+  animationHelp.textContent = reducedMotion.matches
+    ? 'Your device requests reduced motion, so names appear in groups immediately and shuffle sounds are paused.'
+    : animationStyle.value === 'off'
+      ? 'Names appear in groups immediately. Shuffle sounds are paused.'
+      : animationStyle.value === 'hat'
+        ? 'Names gather into a hat before moving into groups. Sound is optional and starts off.'
+        : 'Names fly directly into their groups. Sound is optional and starts off.';
+}
+animationStyle.addEventListener('change', updateAnimationHelp);
+reducedMotion.addEventListener('change', updateAnimationHelp);
+updateAnimationHelp();
+
+function playDrawSound(style) {
+  if (!shuffleSound.checked || style === 'off' || reducedMotion.matches) return;
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextClass) return;
+  try {
+    const context = new AudioContextClass();
+    void context.resume();
+    const start = context.currentTime + .03;
+    const notes = style === 'hat' ? [310, 270, 235, 205, 390, 490, 610] : [290, 350, 420, 510];
+    notes.forEach((frequency, index) => {
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      const time = start + index * (style === 'hat' ? .15 : .1);
+      oscillator.type = 'triangle';
+      oscillator.frequency.setValueAtTime(frequency, time);
+      gain.gain.setValueAtTime(.0001, time);
+      gain.gain.exponentialRampToValueAtTime(.035, time + .015);
+      gain.gain.exponentialRampToValueAtTime(.0001, time + .09);
+      oscillator.connect(gain).connect(context.destination);
+      oscillator.start(time);
+      oscillator.stop(time + .1);
+    });
+    window.setTimeout(() => { void context.close(); }, 1800);
+  } catch { /* Audio is optional; grouping must still work. */ }
+}
+
+function animateDraw(style) {
+  motionCleanup();
+  if (style === 'off' || reducedMotion.matches || !Element.prototype.animate) return;
+  const items = [...cards.querySelectorAll('.group-card li')].slice(0, 48);
+  if (!items.length) return;
+  const stage = document.createElement('div');
+  stage.className = 'draw-stage';
+  stage.setAttribute('aria-hidden', 'true');
+  const hat = document.createElement('div');
+  hat.className = 'draw-hat';
+  hat.innerHTML = '<span class="hat-crown"></span><span class="hat-brim"></span>';
+  if (style === 'hat') stage.append(hat);
+  document.body.append(stage);
+  const animations = [];
+  let cancelled = false;
+  let timer;
+  motionCleanup = () => {
+    cancelled = true;
+    window.clearTimeout(timer);
+    animations.forEach((animation) => animation.cancel());
+    stage.remove();
+    cards.classList.remove('is-drawing');
+  };
+  cards.classList.add('is-drawing');
+  const centerX = window.innerWidth / 2;
+  const centerY = Math.min(window.innerHeight * .42, 330);
+  const startY = Math.max(24, Math.min(window.innerHeight - 70, namesField.getBoundingClientRect().top + 35));
+  const duration = style === 'hat' ? 780 : 650;
+  items.forEach((item, index) => {
+    const box = item.getBoundingClientRect();
+    const x = Math.max(8, Math.min(window.innerWidth - 150, box.left));
+    const y = Math.max(8, Math.min(window.innerHeight - 42, box.top));
+    const pill = document.createElement('span');
+    pill.className = 'draw-name';
+    pill.textContent = item.textContent;
+    pill.style.left = `${x}px`;
+    pill.style.top = `${y}px`;
+    stage.append(pill);
+    const startX = centerX - x + ((index % 5) - 2) * 34;
+    const sourceY = startY - y;
+    const hatX = centerX - x;
+    const hatY = centerY - y;
+    const frames = style === 'hat'
+      ? [
+          { transform: `translate(${startX}px, ${sourceY}px) scale(1) rotate(0deg)`, opacity: 0, offset: 0 },
+          { transform: `translate(${startX}px, ${sourceY}px) scale(1) rotate(0deg)`, opacity: 1, offset: .08 },
+          { transform: `translate(${hatX}px, ${hatY}px) scale(.55) rotate(${(index % 2 ? 1 : -1) * 22}deg)`, opacity: 1, offset: .38 },
+          { transform: `translate(${hatX}px, ${hatY}px) scale(.3) rotate(0deg)`, opacity: 0, offset: .47 },
+          { transform: `translate(${hatX}px, ${hatY}px) scale(.45) rotate(0deg)`, opacity: 0, offset: .58 },
+          { transform: `translate(${hatX}px, ${hatY}px) scale(.75) rotate(${(index % 2 ? 1 : -1) * 14}deg)`, opacity: 1, offset: .68 },
+          { transform: 'translate(0, 0) scale(1) rotate(0deg)', opacity: 0, offset: 1 }
+        ]
+      : [
+          { transform: `translate(${startX}px, ${sourceY}px) scale(.8)`, opacity: 0 },
+          { transform: `translate(${startX}px, ${sourceY}px) scale(1)`, opacity: 1, offset: .15 },
+          { transform: 'translate(0, 0) scale(1)', opacity: 0 }
+        ];
+    animations.push(pill.animate(frames, { duration, delay: index * (style === 'hat' ? 38 : 42), easing: 'cubic-bezier(.25,.75,.2,1)', fill: 'both' }));
+  });
+  if (style === 'hat') animations.push(hat.animate([
+    { transform: 'translateX(-50%) rotate(0deg)' },
+    { transform: 'translateX(-50%) rotate(-12deg)', offset: .35 },
+    { transform: 'translateX(-50%) rotate(11deg)', offset: .52 },
+    { transform: 'translateX(-50%) rotate(-6deg)', offset: .72 },
+    { transform: 'translateX(-50%) rotate(0deg)' }
+  ], { duration: 1150, fill: 'both' }));
+  timer = window.setTimeout(() => { if (!cancelled) motionCleanup(); }, duration + items.length * 42 + 100);
+}
 
 function mode() { return form.elements.method.value; }
 function updateMode() {
@@ -30,6 +146,8 @@ function updateMode() {
   clearResults();
 }
 function clearResults() {
+  window.cancelAnimationFrame(motionFrame);
+  motionCleanup();
   currentGroups = null;
   results.hidden = true;
   message.textContent = '';
@@ -75,6 +193,8 @@ function reviewDuplicates(duplicates) {
   }
 }
 function render(groups, labels, omitted) {
+  window.cancelAnimationFrame(motionFrame);
+  motionCleanup();
   const firstDraw = results.hidden;
   cards.replaceChildren();
   groups.forEach((members, index) => {
@@ -103,6 +223,12 @@ function render(groups, labels, omitted) {
   results.hidden = false;
   message.textContent = '';
   if (firstDraw) document.querySelector('#results-heading').focus();
+  const style = animationStyle.value;
+  if (style !== 'off' && !reducedMotion.matches) {
+    results.scrollIntoView({ block: 'start', behavior: 'instant' });
+    playDrawSound(style);
+    motionFrame = window.requestAnimationFrame(() => { motionFrame = 0; animateDraw(style); });
+  }
 }
 function randomize() {
   const { chosen, omitted } = selectedParticipants();
