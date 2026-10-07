@@ -6,6 +6,7 @@ const numberField = document.querySelector('#group-number');
 const groupNamesField = document.querySelector('#group-names');
 const picker = document.querySelector('#participant-picker');
 const options = document.querySelector('#participant-options');
+const participantSummary = document.querySelector('#participant-summary');
 const duplicateBox = document.querySelector('#duplicate-review');
 const duplicateList = document.querySelector('#duplicate-list');
 const confirmDuplicates = document.querySelector('#confirm-duplicates');
@@ -49,6 +50,11 @@ function populateParticipants() {
     options.append(label);
   });
   reviewDuplicates(parseNames(namesField.value).duplicates);
+  updateParticipantSummary();
+}
+function updateParticipantSummary() {
+  const { chosen, omitted } = selectedParticipants();
+  participantSummary.textContent = `${chosen.length} included · ${omitted.length} omitted`;
 }
 function selectedParticipants() {
   const { entries } = parseNames(namesField.value);
@@ -121,7 +127,7 @@ function randomize() {
 form.addEventListener('submit', (event) => { event.preventDefault(); randomize(); });
 form.elements.method.forEach((radio) => radio.addEventListener('change', updateMode));
 namesField.addEventListener('input', () => { confirmDuplicates.checked = false; populateParticipants(); clearResults(); });
-options.addEventListener('change', () => { confirmDuplicates.checked = false; reviewDuplicates(reviewNames(selectedParticipants().chosen).duplicates); clearResults(); });
+options.addEventListener('change', () => { confirmDuplicates.checked = false; reviewDuplicates(reviewNames(selectedParticipants().chosen).duplicates); updateParticipantSummary(); clearResults(); });
 numberField.addEventListener('input', clearResults);
 groupNamesField.addEventListener('input', clearResults);
 confirmDuplicates.addEventListener('change', clearResults);

@@ -21,7 +21,7 @@
     <form id="grouper-form" novalidate>
       <label for="names" class="field-title">Participants <span>one name per line</span></label>
       <textarea id="names" rows="10" placeholder="Amina&#10;David&#10;Ihechi&#10;Sam" spellcheck="false" autocomplete="off"></textarea>
-      <div id="participant-picker" class="participant-picker" hidden><p class="field-title">Include in this draw</p><p>Uncheck anyone sitting out. Their name stays in your list.</p><div id="participant-options" class="participant-options"></div></div>
+      <div id="participant-picker" class="participant-picker" hidden><p class="field-title">Include in this draw</p><p>Uncheck anyone sitting out. Their name stays in your list.</p><p id="participant-summary" role="status" aria-live="polite"></p><div id="participant-options" class="participant-options"></div></div>
       <fieldset>
         <legend class="field-title">Group by</legend>
         <div class="method-options"><label><input type="radio" name="method" value="groups" checked> Number of groups</label><label><input type="radio" name="method" value="size"> Maximum group size</label></div>
