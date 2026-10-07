@@ -51,21 +51,28 @@ function playDrawSound(style) {
     const context = new AudioContextClass();
     void context.resume();
     const start = context.currentTime + .03;
-    const notes = style === 'hat' ? [310, 270, 235, 205, 390, 490, 610] : [290, 350, 420, 510];
-    notes.forEach((frequency, index) => {
-      const oscillator = context.createOscillator();
+    const bursts = style === 'hat' ? 7 : 4;
+    const samples = Math.floor(context.sampleRate * .11);
+    const buffer = context.createBuffer(1, samples, context.sampleRate);
+    const channel = buffer.getChannelData(0);
+    for (let i = 0; i < samples; i += 1) {
+      const envelope = Math.sin(Math.PI * i / samples);
+      channel[i] = (Math.random() * 2 - 1) * envelope;
+    }
+    for (let index = 0; index < bursts; index += 1) {
+      const source = context.createBufferSource();
+      const filter = context.createBiquadFilter();
       const gain = context.createGain();
-      const time = start + index * (style === 'hat' ? .15 : .1);
-      oscillator.type = 'triangle';
-      oscillator.frequency.setValueAtTime(frequency, time);
-      gain.gain.setValueAtTime(.0001, time);
-      gain.gain.exponentialRampToValueAtTime(.035, time + .015);
-      gain.gain.exponentialRampToValueAtTime(.0001, time + .09);
-      oscillator.connect(gain).connect(context.destination);
-      oscillator.start(time);
-      oscillator.stop(time + .1);
-    });
-    window.setTimeout(() => { void context.close(); }, 1800);
+      const time = start + index * (style === 'hat' ? .14 : .12);
+      source.buffer = buffer;
+      filter.type = 'bandpass';
+      filter.frequency.value = 760 + index * 85;
+      filter.Q.value = .55;
+      gain.gain.value = .09;
+      source.connect(filter).connect(gain).connect(context.destination);
+      source.start(time);
+    }
+    window.setTimeout(() => { void context.close(); }, 2200);
   } catch { /* Audio is optional; grouping must still work. */ }
 }
 
