@@ -22,6 +22,7 @@ const drawNextButton = document.querySelector('#draw-next');
 const revealRemainingButton = document.querySelector('#reveal-remaining');
 const hatStand = document.querySelector('#draw-hat-stand');
 const animationStyle = document.querySelector('#animation-style');
+const drawMode = document.querySelector('#draw-mode');
 const shuffleSound = document.querySelector('#shuffle-sound');
 const animationHelp = document.querySelector('#animation-help');
 let currentGroups = null;
@@ -33,6 +34,7 @@ let motionFrame = 0;
 let drawQueue = [];
 let drawIndex = 0;
 let drawGeneration = 0;
+let activeDrawStyle = 'hat';
 let stopSound = () => {};
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -40,20 +42,17 @@ function updateAnimationHelp() {
   const disabled = animationStyle.value === 'off' || reducedMotion.matches;
   shuffleSound.disabled = disabled;
   animationHelp.textContent = reducedMotion.matches
-    ? animationStyle.value === 'hat-step'
+    ? drawMode.value === 'step'
       ? 'Draw next still reveals one name per tap. Your device skips motion and sound.'
       : 'Your device requests reduced motion, so names appear in groups immediately and shuffle sounds are paused.'
     : animationStyle.value === 'off'
-      ? 'Names appear in groups immediately. Shuffle sounds are paused.'
-      : animationStyle.value === 'hat-step'
-        ? 'Names gather into a hat. Tap Draw next to reveal each name at your own pace.'
-      : animationStyle.value === 'hat'
-        ? 'Names gather into a hat before moving into groups. Sound is optional and starts off.'
-        : animationStyle.value === 'spin'
-          ? 'Names spin across the screen before landing in their groups.'
-          : 'Names fly directly into their groups. Sound is optional and starts off.';
+      ? drawMode.value === 'step' ? 'Tap Draw next to reveal one name without motion or sound.' : 'Names appear in groups immediately. Shuffle sounds are paused.'
+      : drawMode.value === 'step'
+        ? 'Tap Draw next for each slow reveal (about 4 seconds). Reveal remaining finishes the draw immediately.'
+        : 'Names move slowly into their groups automatically. Sound is optional and starts off.';
 }
 animationStyle.addEventListener('change', updateAnimationHelp);
+drawMode.addEventListener('change', updateAnimationHelp);
 reducedMotion.addEventListener('change', updateAnimationHelp);
 updateAnimationHelp();
 
@@ -123,8 +122,8 @@ function animateDraw(style) {
   const centerX = window.innerWidth / 2;
   const centerY = Math.min(window.innerHeight * .42, 330);
   const startY = Math.max(24, Math.min(window.innerHeight - 70, namesField.getBoundingClientRect().top + 35));
-  const duration = style === 'hat' ? 2200 : style === 'spin' ? 1700 : 1200;
-  const stagger = style === 'hat' ? 65 : style === 'spin' ? 70 : 75;
+  const duration = style === 'hat' ? 6000 : style === 'spin' ? 5000 : 4000;
+  const stagger = 180;
   items.forEach((item, index) => {
     const box = item.getBoundingClientRect();
     const x = Math.max(8, Math.min(window.innerWidth - 150, box.left));
@@ -167,7 +166,7 @@ function animateDraw(style) {
     { transform: 'translateX(-50%) rotate(11deg)', offset: .52 },
     { transform: 'translateX(-50%) rotate(-6deg)', offset: .72 },
     { transform: 'translateX(-50%) rotate(0deg)' }
-  ], { duration: 1800, fill: 'both' }));
+  ], { duration: 5000, fill: 'both' }));
   timer = window.setTimeout(() => { if (!cancelled) motionCleanup(); }, duration + items.length * stagger + 100);
 }
 
@@ -217,13 +216,13 @@ function gatherIntoHat(names) {
       { transform: `translate(${offsetX}px, ${startY - hatY}px) scale(1)`, opacity: 0 },
       { transform: `translate(${offsetX}px, ${startY - hatY}px) scale(1)`, opacity: 1, offset: .15 },
       { transform: 'translate(0, 0) scale(.45)', opacity: 0 }
-    ], { duration: 950, delay: index * 45, easing: 'ease-in', fill: 'both' }));
+    ], { duration: 2600, delay: index * 90, easing: 'ease-in', fill: 'both' }));
   });
   timer = window.setTimeout(() => {
     if (generation !== drawGeneration) return;
     motionCleanup();
     drawNextButton.disabled = false;
-  }, 1050 + Math.min(names.length, 36) * 45);
+  }, 2700 + Math.min(names.length, 36) * 90);
 }
 
 function drawNext() {
@@ -249,7 +248,7 @@ function drawNext() {
       summary.textContent = `${next.name} → ${next.label}. ${drawIndex} of ${drawQueue.length} names drawn. Tap Draw next to continue.`;
     }
   };
-  if (reducedMotion.matches || !Element.prototype.animate) {
+  if (activeDrawStyle === 'off' || reducedMotion.matches || !Element.prototype.animate) {
     reveal();
     return;
   }
@@ -269,14 +268,27 @@ function drawNext() {
   pill.style.top = `${y}px`;
   stage.append(pill);
   document.body.append(stage);
-  const startX = hat.left + hat.width / 2 - x;
-  const startY = Math.max(50, Math.min(window.innerHeight - 80, hat.top + hat.height / 2)) - y;
-  const animation = pill.animate([
+  const fromHat = activeDrawStyle === 'hat';
+  const startX = (fromHat ? hat.left + hat.width / 2 : window.innerWidth / 2) - x;
+  const startY = Math.max(50, Math.min(window.innerHeight - 80, fromHat ? hat.top + hat.height / 2 : 100)) - y;
+  const frames = activeDrawStyle === 'spin' ? [
+    { transform: `translate(${startX}px, ${startY}px) scale(.6) rotate(-90deg)`, opacity: 0 },
+    { transform: `translate(${startX - 60}px, ${startY + 60}px) scale(1) rotate(90deg)`, opacity: 1, offset: .35 },
+    { transform: `translate(${startX + 40}px, ${startY + 110}px) scale(1) rotate(270deg)`, opacity: 1, offset: .65 },
+    { transform: 'translate(0, 0) scale(1) rotate(360deg)', opacity: 1, offset: .95 },
+    { transform: 'translate(0, 0) scale(1) rotate(360deg)', opacity: 0 }
+  ] : activeDrawStyle === 'cascade' ? [
+    { transform: `translate(${startX}px, ${startY}px) scale(.7)`, opacity: 0 },
+    { transform: `translate(${startX}px, ${startY}px) scale(1)`, opacity: 1, offset: .25 },
+    { transform: 'translate(0, 0) scale(1)', opacity: 1, offset: .95 },
+    { transform: 'translate(0, 0) scale(1)', opacity: 0 }
+  ] : [
     { transform: `translate(${startX}px, ${startY}px) scale(.45) rotate(-18deg)`, opacity: 0 },
     { transform: `translate(${startX}px, ${startY}px) scale(.8) rotate(12deg)`, opacity: 1, offset: .2 },
     { transform: 'translate(0, 0) scale(1) rotate(0deg)', opacity: 1, offset: .9 },
     { transform: 'translate(0, 0) scale(1) rotate(0deg)', opacity: 0 }
-  ], { duration: 1150, easing: 'cubic-bezier(.18,.7,.25,1)', fill: 'both' });
+  ];
+  const animation = pill.animate(frames, { duration: 3600, easing: 'cubic-bezier(.18,.7,.25,1)', fill: 'both' });
   motionCleanup = () => { animation.cancel(); stage.remove(); };
   animation.finished.then(() => { motionCleanup(); reveal(); }, () => {});
 }
@@ -342,7 +354,8 @@ function render(groups, labels, omitted) {
   resetStepDraw();
   const firstDraw = results.hidden;
   const style = animationStyle.value;
-  const stepDraw = style === 'hat-step';
+  const stepDraw = drawMode.value === 'step';
+  activeDrawStyle = style;
   cards.replaceChildren();
   groups.forEach((members, index) => {
     const card = document.createElement('section');
@@ -383,12 +396,15 @@ function render(groups, labels, omitted) {
     }
     drawNextButton.hidden = false;
     revealRemainingButton.hidden = false;
-    hatStand.hidden = false;
+    hatStand.hidden = style !== 'hat';
+    drawNextButton.disabled = false;
     copyButton.disabled = true;
     printButton.disabled = true;
     results.scrollIntoView({ block: 'start', behavior: 'instant' });
-    playDrawSound(style);
-    motionFrame = window.requestAnimationFrame(() => { motionFrame = 0; gatherIntoHat(groups.flat()); });
+    if (style === 'hat') {
+      playDrawSound(style);
+      motionFrame = window.requestAnimationFrame(() => { motionFrame = 0; gatherIntoHat(groups.flat()); });
+    }
   } else if (style !== 'off' && !reducedMotion.matches) {
     results.scrollIntoView({ block: 'start', behavior: 'instant' });
     playDrawSound(style);

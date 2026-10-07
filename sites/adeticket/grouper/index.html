@@ -9,7 +9,7 @@
   <link rel="icon" href="/favicon.png" type="image/png" sizes="64x64">
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="/grouper/grouper.css?v=5">
-  <script type="module" src="/grouper/app.mjs?v=7"></script>
+  <script type="module" src="/grouper/app.mjs?v=8"></script>
 </head>
 <body class="grouper-body">
   <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -34,8 +34,8 @@
       <textarea id="group-names" rows="3" autocomplete="off"></textarea>
       <div class="shuffle-settings">
         <label for="animation-style" class="field-title">Shuffle animation</label>
-        <select id="animation-style" aria-describedby="animation-help"><option value="hat-step">Hat draw · Draw next</option><option value="hat">Hat draw · Automatic</option><option value="cascade">Cascade</option><option value="spin">Spin &amp; deal</option><option value="off">Off</option></select>
-        <label class="sound-option"><input id="shuffle-sound" type="checkbox"> Play shuffle sounds</label>
+        <select id="animation-style" aria-describedby="animation-help"><option value="hat">Hat draw</option><option value="cascade">Cascade</option><option value="spin">Spin &amp; deal</option><option value="off">Off</option></select>
+        <label for="draw-mode" class="field-title">Draw mode</label><select id="draw-mode" aria-describedby="animation-help"><option value="step">Draw next · one name at a time</option><option value="auto">Automatic · all names</option></select><label class="sound-option"><input id="shuffle-sound" type="checkbox"> Play shuffle sounds</label>
         <p id="animation-help" class="field-help">Draw next reveals one name at a time. Sound is optional and starts off.</p>
       </div>
       <div id="duplicate-review" class="review" hidden><strong>Repeated names need a check</strong><ul id="duplicate-list"></ul><label><input type="checkbox" id="confirm-duplicates"> These are separate participants; include every line.</label></div>
