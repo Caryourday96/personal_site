@@ -48,7 +48,7 @@ function updateAnimationHelp() {
     : animationStyle.value === 'off'
       ? drawMode.value === 'step' ? 'Tap Draw next to reveal one name without motion or sound.' : 'Names appear in groups immediately. Shuffle sounds are paused.'
       : drawMode.value === 'step'
-        ? 'Tap Draw next for each reveal (1.5 seconds). Reveal remaining finishes the draw immediately.'
+        ? 'Tap Draw next for each reveal (1 second). You can also use Enter or Space when the button is focused. Reveal remaining finishes immediately.'
         : 'Names move slowly into their groups automatically. Sound is optional and starts off.';
 }
 animationStyle.addEventListener('change', updateAnimationHelp);
@@ -176,6 +176,7 @@ function resetStepDraw() {
   drawQueue = [];
   drawIndex = 0;
   drawNextButton.hidden = true;
+  drawNextButton.textContent = 'Draw next';
   revealRemainingButton.hidden = true;
   hatStand.hidden = true;
   copyButton.disabled = false;
@@ -241,11 +242,16 @@ function drawNext() {
       hatStand.hidden = true;
       copyButton.disabled = false;
       printButton.disabled = false;
-      summary.textContent = `${drawQueue.length} people in ${currentGroups.length} group${currentGroups.length === 1 ? '' : 's'}. Every included name appears once.`;
+      summary.textContent = `${next.name} → ${next.label}. All ${drawQueue.length} names drawn into ${currentGroups.length} group${currentGroups.length === 1 ? '' : 's'}. Every included name appears once.`;
       copyButton.focus({ preventScroll: true });
     } else {
       drawNextButton.disabled = false;
+      drawNextButton.textContent = `Draw next · ${drawQueue.length - drawIndex} left`;
       summary.textContent = `${next.name} → ${next.label}. ${drawIndex} of ${drawQueue.length} names drawn. Tap Draw next to continue.`;
+      // Do not move focus away if the user chose another control mid-animation.
+      if (document.activeElement === document.body || document.activeElement === drawNextButton) {
+        drawNextButton.focus({ preventScroll: true });
+      }
     }
   };
   if (activeDrawStyle === 'off' || reducedMotion.matches || !Element.prototype.animate) {
@@ -288,7 +294,7 @@ function drawNext() {
     { transform: 'translate(0, 0) scale(1) rotate(0deg)', opacity: 1, offset: .9 },
     { transform: 'translate(0, 0) scale(1) rotate(0deg)', opacity: 0 }
   ];
-  const animation = pill.animate(frames, { duration: 1500, easing: 'cubic-bezier(.18,.7,.25,1)', fill: 'both' });
+  const animation = pill.animate(frames, { duration: 1000, easing: 'cubic-bezier(.18,.7,.25,1)', fill: 'both' });
   motionCleanup = () => { animation.cancel(); stage.remove(); };
   animation.finished.then(() => { motionCleanup(); reveal(); }, () => {});
 }
@@ -395,6 +401,7 @@ function render(groups, labels, omitted) {
       });
     }
     drawNextButton.hidden = false;
+    drawNextButton.textContent = `Draw next · ${total} left`;
     revealRemainingButton.hidden = false;
     hatStand.hidden = style !== 'hat';
     drawNextButton.disabled = false;
