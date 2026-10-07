@@ -1,4 +1,7 @@
 .grouper-page{max-width:960px;padding-top:64px;padding-bottom:80px}
+.grouper-brand{display:inline-flex;align-items:center;gap:10px}
+.grouper-brand img{display:block;width:44px;height:44px;object-fit:contain;flex:none}
+.grouper-brand span{margin-left:-5px}
 .grouper-page h1{font-size:clamp(46px,8vw,78px);line-height:1.03;letter-spacing:-.05em;margin:14px 0 18px}
 .intro{font-size:19px;line-height:1.6;color:#526257;max-width:710px;margin-bottom:40px}
 #grouper-form{background:#fff;border:1px solid #d1d6ca;border-radius:18px;padding:clamp(20px,5vw,40px);box-shadow:0 14px 35px #214b3710}
