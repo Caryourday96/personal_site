@@ -9,6 +9,8 @@ Prepared in `sites/adeticket/`:
 - More useful home-page context, clear navigation, `robots.txt` and a sitemap.
 - The existing AdSense publisher tag, ad script, privacy page and `ads.txt` remain in place.
 
-Local browser checks opened Home, Guide and About and confirmed their navigation/content. Production deployment, live file checks, indexing and AdSense approval are **not** confirmed by this note. After deployment, verify `/`, `/guide.html`, `/about.html`, `/robots.txt`, `/sitemap.xml`, `/privacy.html` and `/ads.txt` on the canonical domain. Request review only after the published pages work and have had a chance to be crawled. Google decides approval; adding pages does not guarantee it.
+Commit `e29e860` deployed successfully in GitHub Actions runs `37570511176` and `37570511114`. Browser checks opened the live Home and Guide pages with the new content; direct HTTPS checks returned 200 for `/about.html`, `/robots.txt`, `/sitemap.xml` and `/ads.txt`. The AdSense Sites page still shows `adeticket.com` as **Needs attention → Low value content**, with `ads.txt` marked **Authorized**. The account banner also says payment information and site connection are needed before earning. Indexing, user-interest signals and AdSense approval are **not** confirmed. A new review was not requested: Google must judge the published content, and adding pages alone cannot guarantee that the quality concern is fixed.
+
+Next: let Google crawl the updated pages, review Search Console indexing if available, and keep adding genuinely useful product documentation as the apps mature. Then decide whether to check “I confirm I have fixed the issues” and request a fresh review. Complete payment information separately before expecting ad revenue.
 
 Do not add generic filler, copied articles, fabricated testimonials or ad-heavy empty pages to chase approval. The next durable improvement is to publish genuinely useful product documentation and examples as each app matures.
