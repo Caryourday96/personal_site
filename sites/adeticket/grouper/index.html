@@ -9,7 +9,7 @@
   <link rel="icon" href="/favicon.png" type="image/png" sizes="64x64">
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="/grouper/grouper.css?v=5">
-  <script type="module" src="/grouper/app.mjs?v=6"></script>
+  <script type="module" src="/grouper/app.mjs?v=7"></script>
 </head>
 <body class="grouper-body">
   <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -43,7 +43,7 @@
       <div class="form-actions"><button class="button primary-action" type="submit">Randomize groups</button><button id="clear-form" class="clear-action" type="button">Clear form</button></div>
     </form>
     <section id="results" class="results" aria-labelledby="results-heading" hidden>
-      <div class="results-head"><div><p class="eyebrow">YOUR GROUPS</p><h2 id="results-heading" tabindex="-1">Ready to go.</h2><p id="result-summary" role="status"></p></div><div class="result-actions"><button id="draw-next" type="button" hidden>Draw next</button><button id="shuffle-again" type="button">Shuffle again</button><button id="copy-results" type="button">Copy results</button><button id="print-results" type="button">Print</button></div></div>
+      <div class="results-head"><div><p class="eyebrow">YOUR GROUPS</p><h2 id="results-heading" tabindex="-1">Ready to go.</h2><p id="result-summary" role="status"></p></div><div class="result-actions"><button id="draw-next" type="button" hidden>Draw next</button><button id="reveal-remaining" type="button" hidden>Reveal remaining</button><button id="shuffle-again" type="button">Shuffle again</button><button id="copy-results" type="button">Copy results</button><button id="print-results" type="button">Print</button></div></div>
       <div id="draw-hat-stand" class="draw-hat-stand" aria-hidden="true" hidden><span class="stand-crown"></span><span class="stand-brim"></span></div>
       <div id="group-cards" class="group-grid"></div><p id="omitted-summary" class="omitted-summary" hidden></p>
     </section>

@@ -19,6 +19,7 @@ const shuffleButton = document.querySelector('#shuffle-again');
 const copyButton = document.querySelector('#copy-results');
 const printButton = document.querySelector('#print-results');
 const drawNextButton = document.querySelector('#draw-next');
+const revealRemainingButton = document.querySelector('#reveal-remaining');
 const hatStand = document.querySelector('#draw-hat-stand');
 const animationStyle = document.querySelector('#animation-style');
 const shuffleSound = document.querySelector('#shuffle-sound');
@@ -32,6 +33,7 @@ let motionFrame = 0;
 let drawQueue = [];
 let drawIndex = 0;
 let drawGeneration = 0;
+let stopSound = () => {};
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 function updateAnimationHelp() {
@@ -56,6 +58,7 @@ reducedMotion.addEventListener('change', updateAnimationHelp);
 updateAnimationHelp();
 
 function playDrawSound(style) {
+  stopSound();
   if (!shuffleSound.checked || style === 'off' || reducedMotion.matches) return;
   const AudioContextClass = window.AudioContext || window.webkitAudioContext;
   if (!AudioContextClass) return;
@@ -84,7 +87,12 @@ function playDrawSound(style) {
       source.connect(filter).connect(gain).connect(context.destination);
       source.start(time);
     }
-    window.setTimeout(() => { void context.close(); }, 3200);
+    const timer = window.setTimeout(() => { stopSound(); }, 3200);
+    stopSound = () => {
+      window.clearTimeout(timer);
+      if (context.state !== 'closed') void context.close().catch(() => {});
+      stopSound = () => {};
+    };
   } catch { /* Audio is optional; grouping must still work. */ }
 }
 
@@ -164,10 +172,12 @@ function animateDraw(style) {
 }
 
 function resetStepDraw() {
+  stopSound();
   drawGeneration += 1;
   drawQueue = [];
   drawIndex = 0;
   drawNextButton.hidden = true;
+  revealRemainingButton.hidden = true;
   hatStand.hidden = true;
   copyButton.disabled = false;
   printButton.disabled = false;
@@ -228,13 +238,15 @@ function drawNext() {
     drawIndex += 1;
     if (drawIndex === drawQueue.length) {
       drawNextButton.hidden = true;
+      revealRemainingButton.hidden = true;
       hatStand.hidden = true;
       copyButton.disabled = false;
       printButton.disabled = false;
       summary.textContent = `${drawQueue.length} people in ${currentGroups.length} group${currentGroups.length === 1 ? '' : 's'}. Every included name appears once.`;
+      copyButton.focus({ preventScroll: true });
     } else {
       drawNextButton.disabled = false;
-      summary.textContent = `${drawIndex} of ${drawQueue.length} names drawn. Tap Draw next to continue.`;
+      summary.textContent = `${next.name} → ${next.label}. ${drawIndex} of ${drawQueue.length} names drawn. Tap Draw next to continue.`;
     }
   };
   if (reducedMotion.matches || !Element.prototype.animate) {
@@ -366,10 +378,11 @@ function render(groups, labels, omitted) {
     const lists = [...cards.querySelectorAll('.group-card ol')];
     for (let row = 0; row < Math.max(...groups.map((group) => group.length)); row += 1) {
       groups.forEach((group, index) => {
-        if (group[row] !== undefined) drawQueue.push({ name: group[row], item: lists[index].children[row] });
+        if (group[row] !== undefined) drawQueue.push({ name: group[row], label: labels[index], item: lists[index].children[row] });
       });
     }
     drawNextButton.hidden = false;
+    revealRemainingButton.hidden = false;
     hatStand.hidden = false;
     copyButton.disabled = true;
     printButton.disabled = true;
@@ -414,6 +427,20 @@ shuffleButton.addEventListener('click', () => {
   randomize();
 });
 drawNextButton.addEventListener('click', drawNext);
+revealRemainingButton.addEventListener('click', () => {
+  if (!drawQueue.length) return;
+  window.cancelAnimationFrame(motionFrame);
+  motionCleanup();
+  for (const entry of drawQueue) {
+    entry.item.textContent = entry.name;
+    entry.item.classList.remove('pending-name');
+  }
+  const total = drawQueue.length;
+  resetStepDraw();
+  summary.textContent = `${total} people in ${currentGroups.length} group${currentGroups.length === 1 ? '' : 's'}. Every included name appears once.`;
+  copyButton.focus({ preventScroll: true });
+});
+shuffleSound.addEventListener('change', () => { if (!shuffleSound.checked) stopSound(); });
 copyButton.addEventListener('click', async () => {
   if (!currentGroups) return;
   try {
