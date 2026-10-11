@@ -1,6 +1,8 @@
 {
   "trailingSlash": "never",
   "routes": [
+    { "route": "/bibleblitz/tv", "rewrite": "/bibleblitz/tv.html", "headers": { "Cache-Control": "no-cache", "X-Content-Type-Options": "nosniff", "X-Frame-Options": "", "Content-Security-Policy": "frame-ancestors 'self' https://ff.adeticket.com", "Referrer-Policy": "strict-origin-when-cross-origin", "Permissions-Policy": "camera=(), microphone=(), geolocation=()" } },
+    { "route": "/bibleblitz/tv.html", "headers": { "Cache-Control": "no-cache", "X-Content-Type-Options": "nosniff", "X-Frame-Options": "", "Content-Security-Policy": "frame-ancestors 'self' https://ff.adeticket.com", "Referrer-Policy": "strict-origin-when-cross-origin", "Permissions-Policy": "camera=(), microphone=(), geolocation=()" } },
     { "route": "/bibleblitz", "rewrite": "/bibleblitz/index.html", "headers": { "Cache-Control": "no-cache", "X-Content-Type-Options": "nosniff", "X-Frame-Options": "DENY", "Referrer-Policy": "strict-origin-when-cross-origin", "Permissions-Policy": "camera=(), microphone=(), geolocation=()" } },
     { "route": "/bibleblitz/*", "headers": { "X-Content-Type-Options": "nosniff", "X-Frame-Options": "DENY", "Referrer-Policy": "strict-origin-when-cross-origin", "Permissions-Policy": "camera=(), microphone=(), geolocation=()" } }
   ]
