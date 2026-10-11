@@ -1,3 +1,7 @@
 {
-  "trailingSlash": "never"
+  "trailingSlash": "never",
+  "routes": [
+    { "route": "/bibleblitz", "rewrite": "/bibleblitz/index.html", "headers": { "Cache-Control": "no-cache", "X-Content-Type-Options": "nosniff", "X-Frame-Options": "DENY", "Referrer-Policy": "strict-origin-when-cross-origin", "Permissions-Policy": "camera=(), microphone=(), geolocation=()" } },
+    { "route": "/bibleblitz/*", "headers": { "X-Content-Type-Options": "nosniff", "X-Frame-Options": "DENY", "Referrer-Policy": "strict-origin-when-cross-origin", "Permissions-Policy": "camera=(), microphone=(), geolocation=()" } }
+  ]
 }
