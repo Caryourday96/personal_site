@@ -1,5 +1,7 @@
 # personal_site
 
+Hydro Compare is the seventh portfolio entry at https://energy.adeticket.com. It is public with no sign-in; imported bills stay in the visitor browser. The app is hosted separately through Sites. No private energy records or additional Azure hosting resources are included in this portfolio update.
+
 Static sites for Kayode Adetunji and Adeticket Inc.
 
 - `sites/portfolio` — personal cloud and DevOps portfolio (work history intentionally excluded)

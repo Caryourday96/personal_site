@@ -1,5 +1,11 @@
 ## Broader Adeticket positioning — 2 October
 
+## 16 October — energy dashboard portfolio addition
+
+- [x] Add Hydro Compare as project seven with canonical https://energy.adeticket.com, accurate description, no-sign-in access, and browser-local privacy note. Existing six projects preserved.
+- [x] Add import and comparison guidance to the app guide.
+- [ ] Publish and verify the portfolio release.
+
 - [x] Broaden hero, metadata and navigation to apps/tools/games; showcase four actual projects with access requirements. Mobile320/390 browser regression passed.
 - [x] Broader positioning deployed1d62acf; both workflows37059536423/37059535508 succeeded. Live rootHTTP200 with new hero, projects CTA and workout-days link.
 
