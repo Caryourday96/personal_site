@@ -3,6 +3,32 @@
   color: #17261f;
   background: #f4f3eb;
 }
+.brand { display: inline-flex; align-items: center; gap: 8px; }
+.brand-logo { width: 56px; height: 56px; object-fit: contain; }
+.resource-links { display: grid; gap: 12px; }
+.resource-links > a { display: block; border: 1px solid #b5bfb2; border-radius: 10px; padding: 22px; text-decoration: none; background: #fffdf6; }
+.resource-links > a:hover { border-color: #214b37; background: #edf2e9; }
+.resource-links strong { display: block; font-size: 22px; margin-bottom: 8px; }
+.resource-links span { line-height: 1.6; color: #526257; }
+.guide-meta { display: block; color: #526257; font-size: 14px; line-height: 1.7; margin: 16px 0 30px; }
+.contents { background: #e6ebdf; border-radius: 12px; padding: 24px; display: flex; flex-wrap: wrap; gap: 16px 24px; margin: 30px 0; }
+.contents strong { width: 100%; }
+.resource-page ul, .resource-page ol, .resource-page dd { font-size: 18px; line-height: 1.8; color: #526257; }
+.resource-page li { margin: 12px 0; }
+.resource-page dt { font-size: 20px; font-weight: 700; margin-top: 24px; }
+.resource-page dd { margin: 8px 0 24px; }
+.example { border-left: 4px solid #214b37; background: #e6ebdf; padding: 8px 24px; margin: 25px 0; }
+.example h3 { font-size: 22px; }
+.resource-page figure { margin: 30px 0; }
+.resource-page figure img { display: block; width: 100%; height: auto; border-radius: 10px; }
+.resource-page figcaption { line-height: 1.6; font-size: 14px; color: #526257; margin-top: 12px; }
+.table-wrap { overflow-x: auto; }
+.resource-page table { width: 100%; border-collapse: collapse; line-height: 1.6; }
+.resource-page caption { text-align: left; font-weight: 700; margin-bottom: 16px; }
+.resource-page th, .resource-page td { text-align: left; padding: 16px 12px; border: 1px solid #b5bfb2; vertical-align: top; }
+.resource-page th { background: #e6ebdf; }
+.related { border-top: 2px solid #214b37; margin-top: 25px; padding-top: 25px; }
+@media print { header, footer, .contents, .related, .button { display: none; } .resource-page { max-width: none; padding: 0; } .resource-page section { break-inside: avoid; } }
 * {
   box-sizing: border-box;
 }
@@ -31,7 +57,7 @@ header {
   text-decoration: none;
 }
 .brand span {
-  color: #b26f35;
+  color: #875024;
   margin-left: 5px;
 }
 .hero {
@@ -79,7 +105,7 @@ header {
   min-height: 260px;
 }
 .cards span {
-  color: #b26f35;
+  color: #875024;
   font-weight: 700;
 }
 .cards h2 {
