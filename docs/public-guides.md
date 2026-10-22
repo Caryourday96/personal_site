@@ -4,9 +4,9 @@ Addresses observed content gaps in the Adeticket portfolio following an AdSense 
 
 ## Pages
 
-- `/guides/bible-blitz.html`: mode selection, rules and scoring example, private host controls, TV setup, screenshot and troubleshooting.
-- `/guides/grouper.html`: participant review, worked size examples, reveal controls, randomness limits, sharing and privacy behavior.
-- `/guides/game-night.html`: preparation, actual-equipment rehearsal, hosting and fallback checklist.
+- `/guides/bible-blitz`: mode selection, rules and scoring example, private host controls, TV setup, screenshot and troubleshooting.
+- `/guides/grouper`: participant review, worked size examples, reveal controls, randomness limits, sharing and privacy behavior.
+- `/guides/game-night`: preparation, actual-equipment rehearsal, hosting and fallback checklist.
 
 Homepage and guide hub link to all three. About now reflects all seven projects; all existing portfolio entries remain. Grouper links directly to its guide. Canonical URLs and sitemap entries support discovery. Updated page headers and new guide icons use the supplied original Adeticket PNG without modifying its artwork.
 
@@ -19,3 +19,11 @@ All six updated portfolio/resource pages passed at 1440, 390 and 320 CSS pixels 
 ## Follow-up
 
 Confirm the deployed pages and sitemap before the owner requests another AdSense review. Search indexing and AdSense decisions are external and not verified by these checks. Keep adding resources only where they help users complete real tasks; do not add filler pages or fabricated testimonials. Remaining app-specific guides can be developed from verified product behavior as needed.
+
+## Second review — October 22, 2026
+
+Aligned canonical tags, internal links and the sitemap with Azure’s extensionless public URLs. Clarified the one-hour inactivity limit, pre-start phone joining, Host mode versus Online mode, and Party presentation controls. Expanded the privacy notice from verified application behavior, added keyboard navigation and current branding, and removed the unsupported consent-messaging claim.
+
+The homepage advertising loader is paused pending verification of consent setup. Publisher metadata and ads.txt remain in place; Google supports these site-verification methods (https://support.google.com/adsense/answer/7584263). Before enabling advertisements, inspect the actual AdSense Privacy & messaging configuration, configure the appropriate consent mechanism, verify its regional behavior, and update the notice to match. This audit did not access the AdSense account or submit a review.
+
+All seven pages passed local desktop/mobile width, link, anchor, canonical, keyboard and automated accessibility checks. With requests unblocked, the checked pages generated no third-party requests. Production verification follows deployment.

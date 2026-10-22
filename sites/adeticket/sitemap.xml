@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://adeticket.com/</loc></url>
-  <url><loc>https://adeticket.com/guide.html</loc></url>
-  <url><loc>https://adeticket.com/about.html</loc></url>
-  <url><loc>https://adeticket.com/privacy.html</loc></url>
+  <url><loc>https://adeticket.com/guide</loc></url>
+  <url><loc>https://adeticket.com/about</loc></url>
+  <url><loc>https://adeticket.com/privacy</loc></url>
   <url><loc>https://adeticket.com/grouper</loc></url>
   <url><loc>https://adeticket.com/bibleblitz</loc></url>
-  <url><loc>https://adeticket.com/guides/bible-blitz.html</loc><lastmod>2026-10-21</lastmod></url>
-  <url><loc>https://adeticket.com/guides/grouper.html</loc><lastmod>2026-10-21</lastmod></url>
-  <url><loc>https://adeticket.com/guides/game-night.html</loc><lastmod>2026-10-21</lastmod></url>
+  <url><loc>https://adeticket.com/guides/bible-blitz</loc><lastmod>2026-10-22</lastmod></url>
+  <url><loc>https://adeticket.com/guides/grouper</loc><lastmod>2026-10-22</lastmod></url>
+  <url><loc>https://adeticket.com/guides/game-night</loc><lastmod>2026-10-22</lastmod></url>
 </urlset>
