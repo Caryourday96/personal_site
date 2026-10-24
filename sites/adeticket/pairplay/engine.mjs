@@ -5,12 +5,12 @@ export function shuffledDeck(pairs, random=Math.random) {
   for(let i=deck.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]];}
   return deck;
 }
-export function createGame(deck){return {deck:[...deck],open:[],matched:[],moves:0};}
+export function createGame(deck,players=1){return {deck:[...deck],open:[],matched:[],moves:0,players,turn:0,scores:[0,0]};}
 export function flip(state,index){
   if(!Number.isInteger(index)||index<0||index>=state.deck.length||state.open.length===2||state.open.includes(index)||state.matched.includes(index))return state;
   const next={...state,open:[...state.open,index]};
-  if(next.open.length===2){next.moves++;const [a,b]=next.open;if(next.deck[a]===next.deck[b]){next.matched=[...state.matched,a,b];next.open=[];}}
+  if(next.open.length===2){next.moves++;const [a,b]=next.open;if(next.deck[a]===next.deck[b]){next.matched=[...state.matched,a,b];next.open=[];next.scores=[...state.scores];next.scores[state.turn]++;}}
   return next;
 }
-export function closeMismatch(state){return state.open.length===2?{...state,open:[]}:state;}
+export function closeMismatch(state){return state.open.length===2?{...state,open:[],turn:state.players===2?1-state.turn:0}:state;}
 export function formatTime(seconds){return `${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;}
